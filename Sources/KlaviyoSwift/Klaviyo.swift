@@ -173,7 +173,42 @@ public class Klaviyo: NSObject {
     public func setUpCustomerID(id: String) {
         Self.sdkInstance.set(externalId: id)
     }
+    
+    /*
+     setUpUserInfo: Save user information to klaviyo profile
+    */
+    @available(
+        iOS, deprecated: 9999, message: "Deprecated as of version 2.0.0. Use `KlaviyoSDK().set(profile:) instead.")
+    @objc
+    public func setUpUserInfo(email: String, phoneNumber: String?, firstName: String?, lastName: String?, city: String?, country: String?, latitude: Double, longitude: Double, region: String?, zip: String?, customProperties: NSDictionary?) {
+        var customProperty = [String: Any]()
+        
+        // If customProperties is not nil, extract valid key-value pairs
+        if let properties = customProperties {
+            for (key, value) in properties {
+                if let key = key as? String {
+                    customProperty[key] = value
+                }
+            }
+        }
 
+        Self.sdkInstance.set(profile: Profile(
+            email: email,
+            phoneNumber: phoneNumber,
+            firstName: firstName,
+            lastName: lastName,
+            location: Profile.Location(
+                city: city,
+                country: country,
+                latitude: latitude,
+                longitude: longitude,
+                region: region,
+                zip: zip
+            ),
+            properties: customProperty
+        ))
+    }
+    
     /**
      handlePush: Extracts tracking information from received push notification and sends the data to Klaviyo for push-tracking
      analystics. Note: this will automatically open any urls found in push payloads unless a deep link handler is specified.
